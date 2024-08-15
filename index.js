@@ -30,11 +30,26 @@ async function run() {
     //await client.db("admin").command({ ping: 1 });
 
     const productCollections = client.db("Product").collection("product");
-    app.get('/products', async (req, res) => {
-        const products = await productCollections.find().toArray();
-        res.send(products);
-    })
+    // app.get('/products', async (req, res) => {
+    //     const products = await productCollections.find().toArray();
+    //     res.send(products);
+    // })
     
+    app.get('/products', async (req, res) => {
+      const page = parseInt(req.query.page);
+      const size = parseInt(req.query.size);
+      const result = await productCollections.find()
+        .skip(page * size)
+        .limit(size)
+        .toArray();
+        res.send(result);
+    })
+
+
+    app.get('/productsCount', async (req, res) => {
+      const count = await productCollections.estimatedDocumentCount();
+      res.send({count : count});
+    })
 
 
     
