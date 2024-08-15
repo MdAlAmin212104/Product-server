@@ -30,25 +30,36 @@ async function run() {
     //await client.db("admin").command({ ping: 1 });
 
     const productCollections = client.db("Product").collection("product");
-    
+
     app.get('/productsCount', async (req, res) => {
       const count = await productCollections.estimatedDocumentCount();
       res.send({count : count});
     })
 
     app.get('/products', async (req, res) => {
-      const page = parseInt(req.query.page);
-      const size = parseInt(req.query.size);
-      const search = req.query.search;
-      const query = {
-        productName: {$regex : search, $options : 'i'},
-      }
-      const result = await productCollections.find(query)
-        .skip(page * size)
-        .limit(size)
-        .toArray();
-        res.send(result);
-    })
+  const page = parseInt(req.query.page);
+  const size = parseInt(req.query.size);
+  const search = req.query.search || '';
+  const brands = req.query.brands ? req.query.brands.split(',') : [];
+  const categories = req.query.categories ? req.query.categories.split(',') : [];
+  const minPrice = parseInt(req.query.minPrice) || 0;
+  const maxPrice = parseInt(req.query.maxPrice) || Infinity;
+
+  const query = {
+    productName: { $regex: search, $options: 'i' },
+    ...(brands.length > 0 && { brand: { $in: brands } }),
+    ...(categories.length > 0 && { category: { $in: categories } }),
+    price: { $gte: minPrice, $lte: maxPrice }
+  };
+
+  const result = await productCollections.find(query)
+    .skip(page * size)
+    .limit(size)
+    .toArray();
+
+  res.send(result);
+});
+
 
 
     
