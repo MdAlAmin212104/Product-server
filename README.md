@@ -1,7 +1,7 @@
 # Product Buy Selling System
 
 
-<h1>How to Clone a React Application From Github and Run</h1>
+<h1>How to Clone a Backend Application From Github and Run</h1>
 <ol>
     <li>Copy the Repository Link</li>
     <li>Open VS Code and Navigate to Your Desired Folder</li>
